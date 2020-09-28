@@ -14,7 +14,7 @@ public class Player {
   public char getType() {
     return type;
   }
-	
+
   public int getId() {
     return id;
   }

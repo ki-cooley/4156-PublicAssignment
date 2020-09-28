@@ -36,7 +36,7 @@ public class GameBoard {
     
     //check turn order: p1 moves on odd, p2 moves on even
     Player currentPlayer = moveAttempt.getPlayer();
-    if (turn % 2 == 0) {
+    if (turn == 2) {
       if (currentPlayer.getId() != 2) {
         return new Message(200);
       }
@@ -54,7 +54,10 @@ public class GameBoard {
     }
     //Update boardState
     boardState[moveX][moveY] = currentPlayer.getType();
-    turn++;
+    turn = (turn % 2) + 1;
+    
+    checkForWin();
+    setIsDraw();
     return new Message(100);
     
   }
@@ -65,14 +68,110 @@ public class GameBoard {
   }
   
   private void checkForWin() {
-    //    only check if turn >= 5/
+
+    //check first row
+    if (boardState[0][0] != 0) {
+      if (boardState[0][0] == boardState[0][1]) {
+        if (boardState[0][1] == boardState[0][2]) {
+          setWinner(boardState[0][2]);
+          return;
+        }
+      }
+    }
+    //check second row
+    if (boardState[1][0] != 0) {
+      if (boardState[1][0] == boardState[1][1]) {
+        if (boardState[1][1] == boardState[1][2]) {
+          setWinner(boardState[1][2]);
+          return;
+        }
+      }
+    }
+    //check third row
+    if (boardState[2][0] != 0) {
+      if (boardState[2][0] == boardState[2][1]) {
+        if (boardState[2][1] == boardState[2][2]) {
+          setWinner(boardState[2][2]);
+          return;
+        }
+      }
+    }
+    //check first column
+    if (boardState[0][0] != 0) {
+      if (boardState[0][0] == boardState[1][0]) {
+        if (boardState[1][0] == boardState[2][0]) {
+          setWinner(boardState[2][0]);
+          return;
+        }
+      }
+    }
+    //check second column
+    if (boardState[0][1] != 0) {
+      if (boardState[0][1] == boardState[1][1]) {
+        if (boardState[1][1] == boardState[2][1]) {
+          setWinner(boardState[2][1]);
+          return;
+        }
+      }
+    }
+    //check third column
+    if (boardState[0][2] != 0) {
+      if (boardState[0][2] == boardState[1][2]) {
+        if (boardState[1][2] == boardState[2][2]) {
+          setWinner(boardState[2][2]);
+          return;
+        }
+      }
+    }
+    //check first diagonal
+    if (boardState[0][0] != 0) {
+      if (boardState[0][0] == boardState[1][1]) {
+        if (boardState[1][1] == boardState[2][2]) {
+          setWinner(boardState[2][2]);
+          return;
+        }
+      }
+    }
+    //check second diagonal
+    if (boardState[0][2] != 0) {
+      if (boardState[0][2] == boardState[1][1]) {
+        if (boardState[1][1] == boardState[2][0]) {
+          setWinner(boardState[2][0]);
+          return;
+        }
+      }
+    }
   }
   
-  private void setWinner() {
-    //call checkForWin()
+  private void setWinner(char winnerType) {
+    if (winnerType == p1.getType()) {
+      winner = 1;
+    } else {
+      winner = 2;
+    }
   }
   
   private void setIsDraw() {
-    //only check when turns = 9
+    //check if board is filled
+    for (int i = 0; i <= 2; i++) {
+      for (int j = 0; j <=  2; j++) {
+        if (boardState[i][j] == 0) {
+          return;
+        }
+      }
+    }
+    if (winner == 0) {
+      isDraw = true;
+    }
+    
   }
+  
+  public Player getPlayer(int playerId) {
+    if (playerId == 1) {
+      return p1;
+    } else {
+      return p2;
+    }
+  }
+  
 }

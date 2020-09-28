@@ -1,13 +1,16 @@
 package controllers;
 
+import com.google.gson.Gson;
 import io.javalin.Javalin;
 import java.io.IOException;
-import java.util.Queue;
-import org.eclipse.jetty.websocket.api.Session;
-import models.*;
 import java.lang.Integer;
+import java.util.Queue;
+import models.GameBoard;
+import models.Message;
+import models.Move;
+import models.Player;
+import org.eclipse.jetty.websocket.api.Session;
 
-import com.google.gson.Gson;
 
 class PlayGame {
 
@@ -32,12 +35,6 @@ class PlayGame {
     app.post("/echo", ctx -> {
       ctx.result(ctx.body());
     });
-    
-    
-//    //
-//    Gson gson = new GsonBuilder().create();
-//    JavalinJson.setFromJsonMapper(gson::fromJson);
-//    JavalinJson.setToJsonMapper(gson::toJson);
 
     //new game end point
     app.get("/newgame", ctx -> {
@@ -45,7 +42,7 @@ class PlayGame {
     });
     //start game end point
     app.post("/startgame", ctx -> {
-      Player p1 = new Player(ctx.attribute("type"), 1);
+      Player p1 = new Player(ctx.formParam("type").charAt(0), 1);
       ctx.result(startGame(p1));
     });
     //join game end point
@@ -53,33 +50,14 @@ class PlayGame {
       joinGame();
       ctx.redirect("/tictactoe.html?p=2");
     });
-    app.post("/move", ctx -> {
-      int playerId = Integer.parseInt(ctx.queryParam("p"));
-      int moveX = Integer.parseInt(ctx.attribute("x"));
-      int moveY = Integer.parseInt(ctx.attribute("y"));
+    app.post("/move/:playerId", ctx -> {
+      int playerId = Integer.parseInt(ctx.pathParam("playerId"));
+      int moveX = Integer.parseInt(ctx.formParam("x"));
+      int moveY = Integer.parseInt(ctx.formParam("y"));
       
       ctx.result(move(playerId, moveX, moveY));
     });
     
-    /**
-     * Please add your end points here.
-     * 
-     * 
-     * 
-     * 
-     * Please add your end points here.
-     * 
-     * 
-     * 
-     * 
-     * Please add your end points here.
-     * 
-     * 
-     * 
-     * 
-     * Please add your end points here.
-     * 
-     */
 
     // Web sockets - DO NOT DELETE or CHANGE
     app.ws("/gameboard", new UiWebSocket());
@@ -113,6 +91,7 @@ class PlayGame {
     sendGameBoardToAllPlayers(gson.toJson(board));
     return gson.toJson(response); 
   }
+  
   /** Send message to all players.
    * @param gameBoardJson Gameboard JSON
    * @throws IOException Websocket message send IO Exception
