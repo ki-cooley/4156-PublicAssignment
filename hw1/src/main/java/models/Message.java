@@ -7,6 +7,11 @@ public class Message {
   static final String ERR_400_MSG = "Game is over";
   static final String ERR_500_MSG = "That space is taken";
   
+  /**
+   * Associates code with corresponding error description and validity.
+   * 
+   * @param code message identifier
+   */
   public Message(int code) {
     this.code = code;
     

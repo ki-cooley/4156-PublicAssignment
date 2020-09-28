@@ -2,9 +2,14 @@ package models;
 
 public class GameBoard {
 
-  //all other instance vars initialized to defaults
+  /**
+   * Constructs GameBoard with Player 1.
+   * 
+   * @param p1 Player 1
+   */
   public GameBoard(Player p1) {
     this.p1 = p1;
+    //p1 always moves first
     turn = 1;
     boardState = new char[3][3];
   }
@@ -23,18 +28,22 @@ public class GameBoard {
 
   private boolean isDraw;
   
+  /**
+   * Checks move validity and updates board.
+   * 
+   * @param moveAttempt the player's attempted move.
+   * @return message describing move errors (if present)
+   */
   public Message playTurn(Move moveAttempt) {
-    //checks that both players joined. player 1 is guaranteed to exist already
     if (gameStarted == false) {
       return new Message(300);
     }
     
-    //checks that game is still going
     if ((winner > 0) || isDraw) {
       return new Message(400);
     }
     
-    //check turn order: p1 moves on odd, p2 moves on even
+    //enforce turn order
     Player currentPlayer = moveAttempt.getPlayer();
     if (turn == 2) {
       if (currentPlayer.getId() != 2) {
@@ -46,13 +55,13 @@ public class GameBoard {
       }
     }
     
-    //check that space is unoccupied
+    //ensure chosen space is unoccupied
     int moveX = moveAttempt.getMoveX();
     int moveY = moveAttempt.getMoveY();
     if (boardState[moveX][moveY] != 0) {
       return new Message(500);
     }
-    //Update boardState
+    
     boardState[moveX][moveY] = currentPlayer.getType();
     turn = (turn % 2) + 1;
     
@@ -166,6 +175,12 @@ public class GameBoard {
     
   }
   
+  /**
+   * Accesses player details.
+   * 
+   * @param playerId the Id of the chosen player
+   * @return Player object
+   */
   public Player getPlayer(int playerId) {
     if (playerId == 1) {
       return p1;
